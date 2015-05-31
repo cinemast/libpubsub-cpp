@@ -21,7 +21,7 @@
 #include "pubsubclient.h"
 
 #include <jsonrpccpp/server/connectors/httpserver.h>
-#include "subscriber.h"
+#include "subscriberlist.h"
 
 class PubSubPeer : private PubSubBroadcastServer, private PubSubServer
 {
@@ -29,8 +29,10 @@ class PubSubPeer : private PubSubBroadcastServer, private PubSubServer
         PubSubPeer(int port);
 
         void addPublishTopic(const std::string &name);
+        bool hasPublishTopic(const std::string &name);
 
-        bool hasTopic(const std::string &name);
+        void addSubscribeTopic(const std::string &name);
+        bool hasSubscribeTopic(const std::string &name);
 
 
         //UDP Methods
@@ -39,7 +41,7 @@ class PubSubPeer : private PubSubBroadcastServer, private PubSubServer
 
 
         //TCP Methods
-        virtual std::string pubsub_subscribe(const std::string& notification);
+        virtual std::string pubsub_subscribe(const std::string& ip, const std::string& notification);
         virtual bool pubsub_unsubscribe(const std::string& notificationId);
         virtual void pubsub_offerTopic(const std::string& ip, const Json::Value& topics);
 
@@ -49,11 +51,12 @@ class PubSubPeer : private PubSubBroadcastServer, private PubSubServer
         UdpBroadcastServer m_bcserver;
         UdpBroadcastClient m_bcclient;
         std::set<std::string> m_publishtopics;
+        std::set<std::string> m_subscribetopics;
 
         jsonrpc::HttpServer m_httpserver;
 
-        std::map<std::string, Subscriber*> m_subscriptions;
-        std::map<std::string, Subscriber*> m_subscriber;
+        SubscriberList m_subscribers;
+        SubscriberList m_publishers;
 
 };
 

@@ -26,11 +26,21 @@ class Subscriber : public PubSubClient
         std::string getSubscriptionId();
         void setSubscriptionId(const std::string &id);
 
+        std::string topic() const;
+        void setTopic(const std::string &topic);
+
+        std::string ip() const;
+        void setIp(const std::string &ip);
+
     private:
         jsonrpc::HttpClient m_httpclient;
         std::string m_subscriptionId;
+        std::string m_topic;
+        std::string m_ip;
+
         static std::string creatUrl(const std::string &ip, int port, bool ssl = false);
         static std::string generateUUID();
+
 
 };
 

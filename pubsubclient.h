@@ -12,9 +12,10 @@ class PubSubClient : public jsonrpc::Client
     public:
         PubSubClient(jsonrpc::IClientConnector &conn, jsonrpc::clientVersion_t type = jsonrpc::JSONRPC_CLIENT_V2) : jsonrpc::Client(conn, type) {}
 
-        std::string pubsub_subscribe(const std::string& notification) throw (jsonrpc::JsonRpcException)
+        std::string pubsub_subscribe(const std::string& ip, const std::string& notification) throw (jsonrpc::JsonRpcException)
         {
             Json::Value p;
+            p["ip"] = ip;
             p["notification"] = notification;
             Json::Value result = this->CallMethod("pubsub.subscribe",p);
             if (result.isString())

@@ -16,14 +16,16 @@ using namespace std;
 Subscriber::Subscriber(const std::string &ip, int port) :
     m_httpclient(creatUrl(ip, port, false)),
     PubSubClient(m_httpclient),
-    m_subscriptionId(generateUUID())
+    m_subscriptionId(generateUUID()),
+    m_ip(ip)
 {
 }
 
 Subscriber::Subscriber(const string &ip, int port, string subscriptionId) :
     m_httpclient(creatUrl(ip, port, false)),
     PubSubClient(m_httpclient),
-    m_subscriptionId(subscriptionId)
+    m_subscriptionId(subscriptionId),
+    m_ip(ip)
 {
 }
 
@@ -36,6 +38,26 @@ void Subscriber::setSubscriptionId(const string &id)
 {
     m_subscriptionId = id;
 }
+std::string Subscriber::topic() const
+{
+    return m_topic;
+}
+
+void Subscriber::setTopic(const std::string &topic)
+{
+    m_topic = topic;
+}
+std::string Subscriber::ip() const
+{
+    return m_ip;
+}
+
+void Subscriber::setIp(const std::string &ip)
+{
+    m_ip = ip;
+}
+
+
 
 std::string Subscriber::creatUrl(const std::string &ip, int port, bool ssl)
 {

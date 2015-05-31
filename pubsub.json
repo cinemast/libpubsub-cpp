@@ -1,7 +1,10 @@
 [
 	{
 		"name": "pubsub.subscribe",
-		"params": {"notification": "notification1"},
+		"params": {
+				"notification": "notification1",
+				"ip": "192.168.184.13"
+		},
 		"returns": "notificationId"
 	},
 	{
