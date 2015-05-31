@@ -1,7 +1,7 @@
 /*************************************************************************
  * libjson-rpc-cpp
  *************************************************************************
- * @file    pubsubpeer.cpp
+ * @file    AbstractPubSubPeer.cpp
  * @date    5/30/2015
  * @author  Peter Spiess-Knafl <peter.knafl@gmail.com>
  * @license See attached LICENSE.txt
@@ -9,37 +9,55 @@
 
 #include "pubsubpeer.h"
 #include "subscriber.h"
+#include <jsonrpccpp/server/requesthandlerfactory.h>
+
 
 using namespace std;
+using namespace jsonrpc;
 
-PubSubPeer::PubSubPeer(int port) :
-    PubSubBroadcastServer(m_bcserver),
-    PubSubServer(m_httpserver),
+AbstractPubSubPeer::AbstractPubSubPeer(const string ip, int port) :
     m_port(port),
     m_bcserver(port),
     m_bcclient(port),
-    m_httpserver(port)
+    m_httpserver(port),
+    m_ip(ip),
+    handler(RequestHandlerFactory::createProtocolHandler(JSONRPC_SERVER_V2, *this))
 {
+    m_bcserver.SetHandler(this->handler);
+    m_httpserver.SetHandler(this->handler);
+
+    this->bindAndAddMethod(jsonrpc::Procedure("pubsub.subscribe", jsonrpc::PARAMS_BY_NAME, jsonrpc::JSON_STRING, "ip",jsonrpc::JSON_STRING,"notification",jsonrpc::JSON_STRING, NULL), &AbstractPubSubPeer::pubsub_subscribeI);
+    this->bindAndAddMethod(jsonrpc::Procedure("pubsub.unsubscribe", jsonrpc::PARAMS_BY_NAME, jsonrpc::JSON_BOOLEAN, "notificationId",jsonrpc::JSON_STRING, NULL), &AbstractPubSubPeer::pubsub_unsubscribeI);
+    this->bindAndAddNotification(jsonrpc::Procedure("pubsub.offerTopic", jsonrpc::PARAMS_BY_NAME, "ip",jsonrpc::JSON_STRING,"topics",jsonrpc::JSON_ARRAY, NULL), &AbstractPubSubPeer::pubsub_offerTopicI);
+
+    this->bindAndAddNotification(jsonrpc::Procedure("pubsub.publishinterest", jsonrpc::PARAMS_BY_NAME, "ip",jsonrpc::JSON_STRING,"topic",jsonrpc::JSON_STRING, NULL), &AbstractPubSubPeer::pubsub_publishinterestI);
+    this->bindAndAddNotification(jsonrpc::Procedure("pubsub.publishtopics", jsonrpc::PARAMS_BY_NAME, "ip",jsonrpc::JSON_STRING,"topics",jsonrpc::JSON_ARRAY, NULL), &AbstractPubSubPeer::pubsub_publishtopicsI);
 }
 
-void PubSubPeer::addPublishTopic(const std::string &name)
+AbstractPubSubPeer::~AbstractPubSubPeer()
+{
+    m_bcserver.StopListening();
+    m_httpserver.StopListening();
+}
+
+void AbstractPubSubPeer::addPublishTopic(const std::string &name)
 {
     m_publishtopics.insert(name);
 }
 
-bool PubSubPeer::hasPublishTopic(const string &name)
+bool AbstractPubSubPeer::hasPublishTopic(const string &name)
 {
     if(m_publishtopics.find(name) != m_publishtopics.end())
         return true;
     return false;
 }
 
-void PubSubPeer::addSubscribeTopic(const string &name)
+void AbstractPubSubPeer::addSubscribeTopic(const string &name)
 {
     m_subscribetopics.insert(name);
 }
 
-bool PubSubPeer::hasSubscribeTopic(const string &name)
+bool AbstractPubSubPeer::hasSubscribeTopic(const string &name)
 {
     if(m_subscribetopics.find(name) != m_subscribetopics.end())
         return true;
@@ -47,7 +65,7 @@ bool PubSubPeer::hasSubscribeTopic(const string &name)
 }
 
 //On subscriber broadcasts interest
-void PubSubPeer::pubsub_publishinterest(const std::string &ip, const std::string &topic)
+void AbstractPubSubPeer::pubsub_publishinterest(const std::string &ip, const std::string &topic)
 {
     if (hasPublishTopic(topic))
     {
@@ -60,8 +78,8 @@ void PubSubPeer::pubsub_publishinterest(const std::string &ip, const std::string
     }
 }
 
-//on publisher broadcasts topics
-void PubSubPeer::pubsub_publishtopics(const std::string &ip, const Json::Value &topics)
+//on publisher broadcass topics
+void AbstractPubSubPeer::pubsub_publishtopics(const std::string &ip, const Json::Value &topics)
 {
     for (unsigned int i=0; i < topics.size(); i++)
     {
@@ -84,7 +102,7 @@ void PubSubPeer::pubsub_publishtopics(const std::string &ip, const Json::Value &
     }
 }
 
-string PubSubPeer::pubsub_subscribe(const string &ip, const string &notification)
+string AbstractPubSubPeer::pubsub_subscribe(const string &ip, const string &notification)
 {
     Subscriber* sub = m_subscribers.getSubscriber(ip, notification);
     if (sub == NULL)
@@ -96,12 +114,54 @@ string PubSubPeer::pubsub_subscribe(const string &ip, const string &notification
     return sub->getSubscriptionId();
 }
 
-bool PubSubPeer::pubsub_unsubscribe(const string &notificationId)
+bool AbstractPubSubPeer::pubsub_unsubscribe(const string &notificationId)
 {
     return m_subscribers.removeSubscriber(notificationId);
 }
 
-void PubSubPeer::pubsub_offerTopic(const string &ip, const Json::Value &topics)
+void AbstractPubSubPeer::pubsub_offerTopic(const string &ip, const Json::Value &topics)
 {
     this->pubsub_publishtopics(ip, topics);
+}
+
+bool AbstractPubSubPeer::bindAndAddMethod(const Procedure &proc, AbstractPubSubPeer::methodPointer_t pointer)
+{
+    if(proc.GetProcedureType() == RPC_METHOD && !this->symbolExists(proc.GetProcedureName()))
+    {
+        this->handler->AddProcedure(proc);
+        this->methods[proc.GetProcedureName()] = pointer;
+        return true;
+    }
+    return false;
+}
+
+bool AbstractPubSubPeer::bindAndAddNotification(const Procedure &proc, AbstractPubSubPeer::notificationPointer_t pointer)
+{
+    if(proc.GetProcedureType() == RPC_NOTIFICATION && !this->symbolExists(proc.GetProcedureName()))
+    {
+        this->handler->AddProcedure(proc);
+        this->notifications[proc.GetProcedureName()] = pointer;
+        return true;
+    }
+    return false;
+}
+
+bool AbstractPubSubPeer::symbolExists(const string &name)
+{
+    if (methods.find(name) != methods.end())
+        return true;
+    if (notifications.find(name) != notifications.end())
+        return true;
+    return false;
+}
+
+
+void AbstractPubSubPeer::HandleMethodCall(Procedure &proc, const Json::Value &input, Json::Value &output)
+{
+    (this->*methods[proc.GetProcedureName()])(input, output);
+}
+
+void AbstractPubSubPeer::HandleNotificationCall(Procedure &proc, const Json::Value &input)
+{
+
 }

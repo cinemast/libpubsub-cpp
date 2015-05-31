@@ -21,12 +21,52 @@
 #include "pubsubclient.h"
 
 #include <jsonrpccpp/server/connectors/httpserver.h>
+#include <jsonrpccpp/server/iprocedureinvokationhandler.h>
+#include <jsonrpccpp/server/requesthandlerfactory.h>
+#include <jsonrpccpp/common/procedure.h>
+#include <jsonrpccpp/server/iclientconnectionhandler.h>
 #include "subscriberlist.h"
 
-class PubSubPeer : private PubSubBroadcastServer, private PubSubServer
+
+class AbstractPubSubPeer : public jsonrpc::IProcedureInvokationHandler
 {
     public:
-        PubSubPeer(int port);
+
+        typedef void(AbstractPubSubPeer::*methodPointer_t)       (const Json::Value &parameter, Json::Value &result);
+        typedef void(AbstractPubSubPeer::*notificationPointer_t) (const Json::Value &parameter);
+
+        AbstractPubSubPeer(const std::string ip, int port);
+        virtual ~AbstractPubSubPeer();
+
+
+        inline virtual void pubsub_subscribeI(const Json::Value &request, Json::Value &response)
+        {
+            response = this->pubsub_subscribe(request["ip"].asString(), request["notification"].asString());
+        }
+        inline virtual void pubsub_unsubscribeI(const Json::Value &request, Json::Value &response)
+        {
+            response = this->pubsub_unsubscribe(request["notificationId"].asString());
+        }
+        inline virtual void pubsub_offerTopicI(const Json::Value &request)
+        {
+            this->pubsub_offerTopic(request["ip"].asString(), request["topics"]);
+        }
+        inline virtual void pubsub_publishinterestI(const Json::Value &request)
+        {
+            this->pubsub_publishinterest(request["ip"].asString(), request["topic"].asString());
+        }
+        inline virtual void pubsub_publishtopicsI(const Json::Value &request)
+        {
+            this->pubsub_publishtopics(request["ip"].asString(), request["topics"]);
+        }
+
+
+        bool Start();
+        void Stop();
+
+        virtual void HandleMethodCall(jsonrpc::Procedure& proc, const Json::Value& input, Json::Value& output);
+        virtual void HandleNotificationCall(jsonrpc::Procedure& proc, const Json::Value& input);
+
 
         void addPublishTopic(const std::string &name);
         bool hasPublishTopic(const std::string &name);
@@ -45,7 +85,15 @@ class PubSubPeer : private PubSubBroadcastServer, private PubSubServer
         virtual bool pubsub_unsubscribe(const std::string& notificationId);
         virtual void pubsub_offerTopic(const std::string& ip, const Json::Value& topics);
 
+    protected:
+        bool bindAndAddMethod(const jsonrpc::Procedure& proc, methodPointer_t pointer);
+        bool bindAndAddNotification(const jsonrpc::Procedure& proc, notificationPointer_t pointer);
+
     private:
+        std::map<std::string, methodPointer_t>          methods;
+        std::map<std::string, notificationPointer_t>    notifications;
+
+        jsonrpc::IProtocolHandler* handler;
         int m_port;
         std::string m_ip; //TODO: determine automatically
         UdpBroadcastServer m_bcserver;
@@ -57,6 +105,9 @@ class PubSubPeer : private PubSubBroadcastServer, private PubSubServer
 
         SubscriberList m_subscribers;
         SubscriberList m_publishers;
+
+
+         bool symbolExists(const std::string &name);
 
 };
 
