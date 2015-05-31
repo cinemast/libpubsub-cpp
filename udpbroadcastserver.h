@@ -12,27 +12,23 @@
 
 #include <string>
 #include <thread>
+#include <jsonrpccpp/server/abstractserverconnector.h>
 
 #define UDP_BUFFER_LEN 65507
 
-void onRequest(const std::string &ip, const std::string &message);
 
-class IBroadcastHandler {
-    public:
-        virtual void onRequest(const std::string &ip, const std::string &message) = 0;
-};
-
-class UdpBroadcastServer
+class UdpBroadcastServer : public jsonrpc::AbstractServerConnector
 {
     public:
-        UdpBroadcastServer(int port, IBroadcastHandler &handler);
+        UdpBroadcastServer(int port);
 
         bool StartListening();
-        void StopListening();
+        bool StopListening();
+
+        bool virtual SendResponse(const std::string& response, void* addInfo = NULL);
 
     private:
         int m_port;
-        IBroadcastHandler& m_handler;
         std::thread* m_thread;
         bool m_run;
         char m_buffer[UDP_BUFFER_LEN];
@@ -40,7 +36,7 @@ class UdpBroadcastServer
 
         static void handleConnections(UdpBroadcastServer* _this);
 
-        static void handleRequest(UdpBroadcastServer* _this);
+        static void handleRequest(UdpBroadcastServer* _this, std::string ip, std::string message);
 };
 
 #endif // UDPBROADCASTSERVER_H

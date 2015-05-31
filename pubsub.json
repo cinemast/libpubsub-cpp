@@ -1,0 +1,19 @@
+[
+	{
+		"name": "pubsub.subscribe",
+		"params": {"notification": "notification1"},
+		"returns": "notificationId"
+	},
+	{
+		"name": "pubsub.unsubscribe",
+		"params": {"notificationId": "id1"},
+		"returns": true
+	},
+	{
+		"name": "pubsub.offerTopic",
+		"params": {
+			"ip": "192.168.184.13",
+			"topics": ["topic1", "topic2"]
+		}
+	}
+]

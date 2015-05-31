@@ -1,0 +1,17 @@
+[
+	{
+		"name": "pubsub.publishinterest",
+		"params": {
+			"ip": "192.168.184.13",
+			"topic": "sometopic"
+		}
+	},
+	{
+		"name": "pubsub.publishtopics",
+		"params": {
+			"ip": "192.168.184.14",
+			"topics": ["topci1", "topic2"]
+		}
+	}
+
+]

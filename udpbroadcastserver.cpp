@@ -20,15 +20,15 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <jsoncpp/json/json.h>
+
 using namespace std;
 
-UdpBroadcastServer::UdpBroadcastServer(int port, IBroadcastHandler &handler) :
+UdpBroadcastServer::UdpBroadcastServer(int port) :
     m_port(port),
-    m_handler(handler),
     m_thread(NULL),
     m_run(false)
 {
-
 }
 
 bool UdpBroadcastServer::StartListening()
@@ -37,14 +37,21 @@ bool UdpBroadcastServer::StartListening()
     m_thread = new thread(UdpBroadcastServer::handleConnections, this);
 }
 
-void UdpBroadcastServer::StopListening()
+bool UdpBroadcastServer::StopListening()
 {
     if (m_run)
     {
         m_run = false;
         m_thread->join();
         delete m_thread;
+        return true;
     }
+    return false;
+}
+
+bool UdpBroadcastServer::SendResponse(const string &response, void *addInfo)
+{
+    return true;
 }
 
 void UdpBroadcastServer::handleConnections(UdpBroadcastServer *_this)
@@ -77,16 +84,12 @@ void UdpBroadcastServer::handleConnections(UdpBroadcastServer *_this)
     buflen = UDP_BUFFER_LEN;
     memset(_this->m_buffer, 0, buflen);
 
-    string ip;
-    string message;
-
     while (_this->m_run)
     {
         status = recvfrom(sock, _this->m_buffer, buflen, 0, (struct sockaddr *)&sock_in, &sinlen);
         if (status > 0)
         {
-            _this->m_ip = sock_in.sin_addr.s_addr;
-            std::thread t(handleRequest, _this);
+            std::thread t(handleRequest, _this, inet_ntoa(sock_in.sin_addr), _this->m_buffer);
             t.detach();
         }
     }
@@ -95,7 +98,13 @@ void UdpBroadcastServer::handleConnections(UdpBroadcastServer *_this)
     close(sock);
 }
 
-void UdpBroadcastServer::handleRequest(UdpBroadcastServer *_this)
+void UdpBroadcastServer::handleRequest(UdpBroadcastServer *_this, string ip, string message)
 {
-    _this->m_handler.onRequest(_this->m_ip, _this->m_buffer);
+    Json::Reader reader;
+    Json::Value val;
+    reader.parse(message,val);
+
+    val["params"]["ip"] = ip;
+
+    _this->OnRequest(val.toStyledString(), NULL);
 }

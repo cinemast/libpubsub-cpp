@@ -1,0 +1,9 @@
+[
+	{
+		"name": "pubsub.join",
+		"param": {
+				"ip": "192.168.1.1", 
+				"notifications": ["notification1", "notification2", "notification3"]
+		}
+	}
+]
