@@ -25,37 +25,22 @@
 #include "subscriberlist.h"
 
 
-class AbstractPubSubPeer : public jsonrpc::IProcedureInvokationHandler
+class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
 {
     public:
 
-        typedef void(AbstractPubSubPeer::*methodPointer_t)       (const Json::Value &parameter, Json::Value &result);
-        typedef void(AbstractPubSubPeer::*notificationPointer_t) (const Json::Value &parameter);
+        typedef void(PubSubPeer::*methodPointer_t)       (const Json::Value &parameter, Json::Value &result);
+        typedef void(PubSubPeer::*notificationPointer_t) (const Json::Value &parameter);
 
-        AbstractPubSubPeer(const std::string ip, int port);
-        virtual ~AbstractPubSubPeer();
+        PubSubPeer(const std::string ip, int port);
+        virtual ~PubSubPeer();
 
 
-        inline virtual void pubsub_subscribeI(const Json::Value &request, Json::Value &response)
-        {
-            response = this->pubsub_subscribe(request["ip"].asString(), request["notification"].asString());
-        }
-        inline virtual void pubsub_unsubscribeI(const Json::Value &request, Json::Value &response)
-        {
-            response = this->pubsub_unsubscribe(request["notificationId"].asString());
-        }
-        inline virtual void pubsub_offerTopicI(const Json::Value &request)
-        {
-            this->pubsub_offerTopic(request["ip"].asString(), request["topics"]);
-        }
-        inline virtual void pubsub_publishinterestI(const Json::Value &request)
-        {
-            this->pubsub_publishinterest(request["ip"].asString(), request["topic"].asString());
-        }
-        inline virtual void pubsub_publishtopicsI(const Json::Value &request)
-        {
-            this->pubsub_publishtopics(request["ip"].asString(), request["topics"]);
-        }
+        inline virtual void pubsub_subscribeI(const Json::Value &request, Json::Value &response);
+        inline virtual void pubsub_unsubscribeI(const Json::Value &request, Json::Value &response);
+        inline virtual void pubsub_offerTopicI(const Json::Value &request);
+        inline virtual void pubsub_publishinterestI(const Json::Value &request);
+        inline virtual void pubsub_publishtopicsI(const Json::Value &request);
 
 
         bool Start();
