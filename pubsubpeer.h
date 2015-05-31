@@ -66,9 +66,11 @@ class AbstractPubSubPeer : public jsonrpc::IProcedureInvokationHandler
 
 
         void addPublishTopic(const std::string &name);
+        void removePublishTopic(const std::string &name);
         bool hasPublishTopic(const std::string &name);
 
         void addSubscribeTopic(const std::string &name);
+        void removeSubscribeTopic(const std::string &name);
         bool hasSubscribeTopic(const std::string &name);
 
         void publishTopic(const std::string &name, Json::Value &params);

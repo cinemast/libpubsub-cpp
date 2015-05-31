@@ -59,6 +59,11 @@ void AbstractPubSubPeer::addPublishTopic(const std::string &name)
     m_bcclient.pubsub_publishtopics(m_ip, topics);
 }
 
+void AbstractPubSubPeer::removePublishTopic(const string &name)
+{
+    m_publishtopics.erase(name);
+}
+
 bool AbstractPubSubPeer::hasPublishTopic(const string &name)
 {
     if(m_publishtopics.find(name) != m_publishtopics.end())
@@ -70,6 +75,17 @@ void AbstractPubSubPeer::addSubscribeTopic(const string &name)
 {
     m_subscribetopics.insert(name);
     m_bcclient.pubsub_publishinterest(m_ip, name);
+}
+
+void AbstractPubSubPeer::removeSubscribeTopic(const string &name)
+{
+    m_subscribetopics.erase(name);
+    //Unsubscribe from publishers
+    vector<Subscriber*> publishers = m_publishers.getSubscriberByTopic(name);
+    for (auto publisher : publishers)
+    {
+        publisher->pubsub_unsubscribe(publisher->getSubscriptionId());
+    }
 }
 
 bool AbstractPubSubPeer::hasSubscribeTopic(const string &name)
@@ -86,7 +102,7 @@ void AbstractPubSubPeer::publishTopic(const string &name, Json::Value &params)
     {
         try
         {
-            subscriber->CallMethod(name, params);
+            subscriber->CallNotification(name, params);
         }
         catch(JsonRpcException& e)
         {
