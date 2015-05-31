@@ -41,6 +41,17 @@ AbstractPubSubPeer::~AbstractPubSubPeer()
     m_httpserver.StopListening();
 }
 
+bool AbstractPubSubPeer::Start()
+{
+    return m_bcserver.StartListening() && m_httpserver.StartListening();
+}
+
+void AbstractPubSubPeer::Stop()
+{
+    m_bcserver.StopListening();
+    m_httpserver.StopListening();
+}
+
 void AbstractPubSubPeer::addPublishTopic(const std::string &name)
 {
     m_publishtopics.insert(name);
@@ -90,8 +101,6 @@ void AbstractPubSubPeer::pubsub_publishtopics(const std::string &ip, const Json:
     {
         if(hasSubscribeTopic(topics[i].asString()))
         {
-            //Register
-            //add result to subscriptions
             Subscriber* sub = new Subscriber(ip,m_port);
             string id = sub->pubsub_subscribe(m_ip, topics[i].asString());
             if (id != "")

@@ -10,15 +10,12 @@
 #ifndef PUBSUBPEER_H
 #define PUBSUBPEER_H
 
-#include "udpbroadcastserver.h"
 #include "udpbroadcastclient.h"
+#include "udpbroadcastserver.h"
 #include "pubsubclient.h"
 #include <set>
 #include <map>
 #include "pubsubbroadcastclient.h"
-#include "pubsubbroadcastserver.h"
-#include "pubsubserver.h"
-#include "pubsubclient.h"
 
 #include <jsonrpccpp/server/connectors/httpserver.h>
 #include <jsonrpccpp/server/iprocedureinvokationhandler.h>
