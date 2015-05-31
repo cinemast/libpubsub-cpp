@@ -85,7 +85,9 @@ void AbstractPubSubPeer::removeSubscribeTopic(const string &name)
     for (auto publisher : publishers)
     {
         publisher->pubsub_unsubscribe(publisher->getSubscriptionId());
+        m_publishers.removeSubscriber(publisher->getSubscriptionId());
     }
+
 }
 
 bool AbstractPubSubPeer::hasSubscribeTopic(const string &name)
