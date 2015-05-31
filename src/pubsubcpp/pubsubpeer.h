@@ -10,8 +10,8 @@
 #ifndef PUBSUBPEER_H
 #define PUBSUBPEER_H
 
-#include "udpbroadcastclient.h"
-#include "udpbroadcastserver.h"
+#include "connector/udpbroadcastclient.h"
+#include "connector/udpbroadcastserver.h"
 #include "pubsubclient.h"
 #include <set>
 #include <map>

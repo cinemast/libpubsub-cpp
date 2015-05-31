@@ -11,7 +11,7 @@
 
 #define MAXBUF 65536
 
-#include "pubsubpeer.h"
+#include <pubsubcpp/pubsubpeer.h>
 
 #define HUMIDITY_PUBLISH_TEMPCHANGED "tempChanged"
 
