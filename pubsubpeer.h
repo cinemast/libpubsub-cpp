@@ -36,11 +36,11 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
         virtual ~PubSubPeer();
 
 
-        inline virtual void pubsub_subscribeI(const Json::Value &request, Json::Value &response);
-        inline virtual void pubsub_unsubscribeI(const Json::Value &request, Json::Value &response);
-        inline virtual void pubsub_offerTopicI(const Json::Value &request);
-        inline virtual void pubsub_publishinterestI(const Json::Value &request);
-        inline virtual void pubsub_publishtopicsI(const Json::Value &request);
+        virtual void pubsub_subscribeI(const Json::Value &request, Json::Value &response);
+        virtual void pubsub_unsubscribeI(const Json::Value &request, Json::Value &response);
+        virtual void pubsub_offerTopicI(const Json::Value &request);
+        virtual void pubsub_publishinterestI(const Json::Value &request);
+        virtual void pubsub_publishtopicsI(const Json::Value &request);
 
 
         bool Start();

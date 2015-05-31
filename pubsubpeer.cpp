@@ -72,6 +72,12 @@ bool PubSubPeer::Start()
 
 void PubSubPeer::Stop()
 {
+    //Unsubscribe from all publishers
+    for (auto subscription : m_subscribetopics)
+    {
+        removeSubscribeTopic(subscription);
+    }
+
     m_bcserver.StopListening();
     m_httpserver.StopListening();
 }

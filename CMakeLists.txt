@@ -10,5 +10,5 @@ add_executable(test ${sources} ${header})
 target_link_libraries(test "-luuid -lpthread -ljsoncpp -ljsonrpccpp-common -ljsonrpccpp-server -ljsonrpccpp-client")
 
 
-add_executable(client client.cpp)
+add_executable(client ${sources} ${header})
 target_link_libraries(client "-luuid -lpthread -ljsoncpp -ljsonrpccpp-common -ljsonrpccpp-server -ljsonrpccpp-client")

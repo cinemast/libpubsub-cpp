@@ -13,49 +13,34 @@
 
 #include "pubsubpeer.h"
 
+#define HUMIDITY_PUBLISH_TEMPCHANGED "tempChanged"
+
+class HumiditySensorPeer : public PubSubPeer
+{
+    public:
+        HumiditySensorPeer(const std::string &ip, int port) : PubSubPeer(ip, port)
+        {
+
+        }
+
+
+        void publishTempratureChanged(double temp)
+        {
+            Json::Value params;
+            params["temp"] = temp;
+            this->publishTopic(HUMIDITY_PUBLISH_TEMPCHANGED, params);
+        }
+};
+
 
 int main(int argc, char*argv[])
 {
+    HumiditySensorPeer peer("192.168.13.78", 55555);
 
-    //PubSubPeer peer("192.168.13.78", 55555);
+    peer.Start();
 
+    peer.addPublishTopic(HUMIDITY_PUBLISH_TEMPCHANGED);
 
+    peer.Stop();
 
- /* int sock, status, buflen, sinlen;
-  char buffer[MAXBUF];
-  struct sockaddr_in sock_in;
-  int yes = 1;
-
-  sinlen = sizeof(struct sockaddr_in);
-  memset(&sock_in, 0, sinlen);
-  buflen = MAXBUF;
-
-  sock = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP);
-
-  sock_in.sin_addr.s_addr = htonl(INADDR_ANY);
-  sock_in.sin_port = htons(0);
-  sock_in.sin_family = PF_INET;
-
-  status = bind(sock, (struct sockaddr *)&sock_in, sinlen);
-  printf("Bind Status = %d\n", status);
-
-
-  status = setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &yes, sizeof(int) );
-  printf("Setsockopt Status = %d\n", status);
-
-
-
-  sock_in.sin_addr.s_addr=htonl(-1);
-  sock_in.sin_port = htons(atoi(argv[1]));
-  sock_in.sin_family = PF_INET;
-
-  sprintf(buffer, "Ciao");
-  buflen = strlen(buffer);
-  status = sendto(sock, buffer, buflen, 0, (struct sockaddr *)&sock_in, sinlen);
-
-  sock_in.sin_addr.s_addr;
-  printf("sendto Status = %d\n", status);
-
-  shutdown(sock, 2);
-  close(sock);*/
 }
