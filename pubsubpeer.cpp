@@ -11,7 +11,6 @@
 #include "subscriber.h"
 #include <jsonrpccpp/server/requesthandlerfactory.h>
 
-
 using namespace std;
 using namespace jsonrpc;
 
@@ -78,6 +77,23 @@ bool AbstractPubSubPeer::hasSubscribeTopic(const string &name)
     if(m_subscribetopics.find(name) != m_subscribetopics.end())
         return true;
     return false;
+}
+
+void AbstractPubSubPeer::publishTopic(const string &name, Json::Value &params)
+{
+    vector<Subscriber*> subscribers = m_subscribers.getSubscriberByTopic(name);
+    for (auto subscriber : subscribers)
+    {
+        try
+        {
+            subscriber->CallMethod(name, params);
+        }
+        catch(JsonRpcException& e)
+        {
+            //if subscribers throws error, remove it from subscriptions
+            m_subscribers.removeSubscriber(subscriber->getSubscriptionId());
+        }
+    }
 }
 
 //On subscriber broadcasts interest

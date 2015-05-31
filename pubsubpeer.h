@@ -71,6 +71,7 @@ class AbstractPubSubPeer : public jsonrpc::IProcedureInvokationHandler
         void addSubscribeTopic(const std::string &name);
         bool hasSubscribeTopic(const std::string &name);
 
+        void publishTopic(const std::string &name, Json::Value &params);
 
         //UDP Methods
         virtual void pubsub_publishinterest(const std::string& ip, const std::string& topic);

@@ -11,6 +11,7 @@
 #define SUBSCRIBERLIST_H
 
 #include <map>
+#include <vector>
 #include "subscriber.h"
 
 class SubscriberList
@@ -26,6 +27,8 @@ class SubscriberList
         bool addSubscriber(Subscriber* subscriber);
 
         Subscriber* getSubscriber(const std::string &ip, const std::string &topic);
+        std::vector<Subscriber*> getSubscriberByTopic(const std::string &topic);
+
 
         bool removeSubscriber(const std::string &subscriptionId);
 

@@ -31,6 +31,17 @@ Subscriber *SubscriberList::getSubscriber(const std::string &ip, const std::stri
     return NULL;
 }
 
+std::vector<Subscriber *> SubscriberList::getSubscriberByTopic(const std::string &topic)
+{
+    std::vector<Subscriber*> result;
+    for (auto &subscriber : m_subscribers)
+    {
+        if (subscriber.second->topic() == topic)
+            result.push_back(subscriber.second);
+    }
+    return result;
+}
+
 bool SubscriberList::removeSubscriber(const std::string &subscriptionId)
 {
     auto iterator = m_subscribers.find(subscriptionId);
