@@ -18,7 +18,8 @@ using namespace jsonrpc;
 AbstractPubSubPeer::AbstractPubSubPeer(const string ip, int port) :
     m_port(port),
     m_bcserver(port),
-    m_bcclient(port),
+    m_bcclientconnector(port),
+    m_bcclient(m_bcclientconnector),
     m_httpserver(port),
     m_ip(ip),
     handler(RequestHandlerFactory::createProtocolHandler(JSONRPC_SERVER_V2, *this))
@@ -43,6 +44,9 @@ AbstractPubSubPeer::~AbstractPubSubPeer()
 void AbstractPubSubPeer::addPublishTopic(const std::string &name)
 {
     m_publishtopics.insert(name);
+    Json::Value topics;
+    topics.append(name);
+    m_bcclient.pubsub_publishtopics(m_ip, topics);
 }
 
 bool AbstractPubSubPeer::hasPublishTopic(const string &name)
@@ -55,6 +59,7 @@ bool AbstractPubSubPeer::hasPublishTopic(const string &name)
 void AbstractPubSubPeer::addSubscribeTopic(const string &name)
 {
     m_subscribetopics.insert(name);
+    m_bcclient.pubsub_publishinterest(m_ip, name);
 }
 
 bool AbstractPubSubPeer::hasSubscribeTopic(const string &name)
@@ -163,5 +168,5 @@ void AbstractPubSubPeer::HandleMethodCall(Procedure &proc, const Json::Value &in
 
 void AbstractPubSubPeer::HandleNotificationCall(Procedure &proc, const Json::Value &input)
 {
-
+    (this->*notifications[proc.GetProcedureName()])(input);
 }

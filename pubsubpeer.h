@@ -97,7 +97,9 @@ class AbstractPubSubPeer : public jsonrpc::IProcedureInvokationHandler
         int m_port;
         std::string m_ip; //TODO: determine automatically
         UdpBroadcastServer m_bcserver;
-        UdpBroadcastClient m_bcclient;
+        UdpBroadcastClient m_bcclientconnector;
+        PubSubBroadcastClient m_bcclient;
+
         std::set<std::string> m_publishtopics;
         std::set<std::string> m_subscribetopics;
 
