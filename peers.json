@@ -1,0 +1,45 @@
+{
+	"notifications": [
+		{
+			"name": "tempChanged",
+			"params": {"temp": 23.4}
+		},
+		{
+			"name": "humidityChanged",
+			"params": {"humidity": 0.65}
+		},
+		{
+			"name": "airspeedChanged",
+			"params": {"speeed": 45.3}
+		},
+		{
+			"name": "shutterChanged",
+			"params": {"open": false}
+		}
+	],
+	"peers": [
+		{
+			"name": "TempSensor",
+			"publish": ["tempChanged"]
+		},
+		{
+			"name": "AirspeedSensor",
+			"publish": ["airspeedChanged"]
+		},
+		{
+			"name": "HumiditySensor",
+			"publish": ["humidityChanged"]
+		},
+		{
+			"name": "Shutter",
+			"publish": ["shutterChanged"],
+			"subscribe": ["airspeedChanged"]
+		},
+		{
+			"name": "Monitor",
+			"subscribe": ["tempChanged", "humidityChanged", 
+					"airspeedChanged", "shutterChanged"]
+		}
+	]
+}
+
