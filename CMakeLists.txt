@@ -8,7 +8,7 @@ set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 find_package(Jsoncpp REQUIRED)
-find_package(Jsonrpccpp COMPONENTS common server client REQUIRED)
+#find_package(Jsonrpccpp COMPONENTS common server client REQUIRED)
 
 
 add_subdirectory(src/libjson-rpc-cpp)
