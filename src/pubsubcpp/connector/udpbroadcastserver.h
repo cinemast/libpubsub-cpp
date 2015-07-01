@@ -20,7 +20,7 @@
 class UdpBroadcastServer : public jsonrpc::AbstractServerConnector
 {
     public:
-        UdpBroadcastServer(int port);
+        UdpBroadcastServer(int port, const std::string &ip);
 
         bool StartListening();
         bool StopListening();

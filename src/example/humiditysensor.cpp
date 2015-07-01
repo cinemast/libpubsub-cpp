@@ -1,9 +1,14 @@
 /*************************************************************************
  * libjson-rpc-cpp
  *************************************************************************
- * @file    AbstractPubSubPeer.cpp
- * @date    5/30/2015
- * @author  Peter Spiess-Knafl <peter.knafl@gmail.com>
+ * @file    humiditysensor.cpp
+ * @date    6/30/2015
+ * @author  Peter Spiess-Knafl <dev@spiessknafl.at>
  * @license See attached LICENSE.txt
  ************************************************************************/
 
+#include "HumiditySensor.h"
+int main()
+{
+    return 0;
+}

@@ -24,10 +24,11 @@
 
 using namespace std;
 
-UdpBroadcastServer::UdpBroadcastServer(int port) :
+UdpBroadcastServer::UdpBroadcastServer(int port, const string &ip) :
     m_port(port),
     m_thread(NULL),
-    m_run(false)
+    m_run(false),
+    m_ip(ip)
 {
 }
 
