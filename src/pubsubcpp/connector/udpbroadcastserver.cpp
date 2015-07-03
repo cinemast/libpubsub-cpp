@@ -65,28 +65,26 @@ void UdpBroadcastServer::handleConnections(UdpBroadcastServer *_this)
     sinlen = sizeof(struct sockaddr_in);
     memset(&sock_in, 0, sinlen);
 
-    sock = socket (AF_INET,SOCK_DGRAM,0);
+    sock = socket (PF_INET,SOCK_DGRAM,IPPROTO_UDP);
 
     struct timeval tv;
 
     tv.tv_sec = 0;  /* 30 Secs Timeout */
     tv.tv_usec = 100000;  // Not init'ing this can cause strange errors
-
-    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,sizeof(struct timeval));
-    int t = 1;
-    setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &t,sizeof(t));
-    status = setsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, &t, sizeof(t));
-
-
+  //  setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,sizeof(struct timeval));
+    //int t = 1;
+    //setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &t,sizeof(t));
+    //status = setsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, &t, sizeof(t));
 
     sock_in.sin_addr.s_addr = htonl(INADDR_ANY);//htonl(SO_BROADCAST);
     sock_in.sin_port = _this->m_port;
-    sock_in.sin_family = AF_INET;
+    sock_in.sin_family = PF_INET;
 
     status = bind(sock, (struct sockaddr *)&sock_in, sinlen);
     printf("Bind Status = %d\n", status);
 
     status = getsockname(sock, (struct sockaddr *)&sock_in, &sinlen);
+    printf("Sock port %d\n",htons(sock_in.sin_port));
 
     buflen = UDP_BUFFER_LEN;
     memset(_this->m_buffer, 0, buflen);
