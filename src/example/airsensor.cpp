@@ -14,7 +14,7 @@ using namespace std;
 
 int main()
 {
-    AirspeedSensor sensor("127.0.0.1", 9999);
+    AirspeedSensor sensor("192.168.13.78", 9999);
     sensor.addPublishTopic(AirspeedSensor::TOPIC_PUBLISH_AIRSPEEDCHANGED);
     int speed = 34;
 

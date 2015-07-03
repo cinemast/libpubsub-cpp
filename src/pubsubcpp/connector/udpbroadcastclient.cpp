@@ -42,23 +42,17 @@ void UdpBroadcastClient::SendRPCMessage(const std::string &message, std::string 
     memset(&sock_in, 0, sinlen);
     buflen = UDP_BUFFER_LEN;
 
-    sock = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP);
-
-    sock_in.sin_addr.s_addr = htonl(INADDR_ANY);
-    sock_in.sin_port = htons(0);
-    sock_in.sin_family = PF_INET;
+    sock = socket (AF_INET,SOCK_DGRAM,0);
 
     status = bind(sock, (struct sockaddr *)&sock_in, sinlen);
-    printf("Bind Status = %d\n", status);
-
-    printf("Bound to: %s\n", inet_ntoa(sock_in.sin_addr));
 
     status = setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &yes, sizeof(int) );
-    printf("Setsockopt Status = %d\n", status);
+    status = setsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, &yes, sizeof(yes));
 
-    sock_in.sin_addr.s_addr=htonl(-1); /* send message to 255.255.255.255 */
-    sock_in.sin_port = htons(m_port); /* port number */
-    sock_in.sin_family = PF_INET;
+
+    sock_in.sin_addr.s_addr=inet_addr(m_address.c_str());
+    sock_in.sin_port = htons(m_port);
+    sock_in.sin_family = AF_INET;
 
     sprintf(buffer, message.c_str());
     buflen = strlen(buffer);

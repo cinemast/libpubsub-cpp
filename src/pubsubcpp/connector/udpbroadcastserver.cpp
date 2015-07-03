@@ -21,6 +21,7 @@
 #include <unistd.h>
 
 #include <jsoncpp/json/json.h>
+#include <iostream>
 
 using namespace std;
 
@@ -64,7 +65,7 @@ void UdpBroadcastServer::handleConnections(UdpBroadcastServer *_this)
     sinlen = sizeof(struct sockaddr_in);
     memset(&sock_in, 0, sinlen);
 
-    sock = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    sock = socket (AF_INET,SOCK_DGRAM,0);
 
     struct timeval tv;
 
@@ -72,10 +73,15 @@ void UdpBroadcastServer::handleConnections(UdpBroadcastServer *_this)
     tv.tv_usec = 100000;  // Not init'ing this can cause strange errors
 
     setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,sizeof(struct timeval));
+    int t = 1;
+    setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &t,sizeof(t));
+    status = setsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, &t, sizeof(t));
 
-    sock_in.sin_addr.s_addr = htonl(INADDR_ANY);
+
+
+    sock_in.sin_addr.s_addr = htonl(INADDR_ANY);//htonl(SO_BROADCAST);
     sock_in.sin_port = _this->m_port;
-    sock_in.sin_family = PF_INET;
+    sock_in.sin_family = AF_INET;
 
     status = bind(sock, (struct sockaddr *)&sock_in, sinlen);
     printf("Bind Status = %d\n", status);
@@ -87,7 +93,9 @@ void UdpBroadcastServer::handleConnections(UdpBroadcastServer *_this)
 
     while (_this->m_run)
     {
+        cout << "Before recvfrom" << endl;
         status = recvfrom(sock, _this->m_buffer, buflen, 0, (struct sockaddr *)&sock_in, &sinlen);
+        cout << "After recvfrom" << endl;
         if (status > 0)
         {
             std::thread t(handleRequest, _this, inet_ntoa(sock_in.sin_addr), _this->m_buffer);
