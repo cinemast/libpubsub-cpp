@@ -14,11 +14,13 @@ JSON-RPC on top of HTTP as transport layer to deliver topic notifications.
 ## Overlay network
 - Each peer is a JSON-RPC server and client.
 - If a peer wants to publish a new topic type, it broadcasts it through
-the network.
+the network (pubsub.topics).
 - If a peer wants to subscribe for a new topic, it broadcasts its intent through
-the network.
+the network (pubsub.interest).
 - Broadcasted intents for subscription/publishment are immediately answered by
-all affected peers with topic offers (implemented through a JSON-RPC method).
+all affected peers with topic offers (pubsub.offertopic).
+- Subscription: call pubsub.subscribe, which returns a subscription id.
+- Revocation: call pubsub.unsubscribe with subscription id.
 
 So the interface each peer offers for subscription management can be described
 using the [libjson-rpc-cpp IDL](https://github.com/cinemast/libjson-rpc-cpp#step-1-writing-the-specification-file):
