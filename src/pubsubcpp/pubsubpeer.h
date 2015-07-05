@@ -68,7 +68,7 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
 
         void pubsub_subscribeI(const Json::Value &request, Json::Value &response)
         {
-            response = this->pubsub_subscribe(request["ip"].asString(), request["port"].asInt(), request["notification"].asString());
+            response = this->pubsub_subscribe(request["ip"].asString(), request["port"].asInt(), request["topic"].asString());
         }
 
         void pubsub_unsubscribeI(const Json::Value &request, Json::Value &response)
@@ -178,7 +178,6 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
         //On subscriber broadcasts interest
         void pubsub_publishinterest(const std::string &ip, uint16_t port, const std::string &topic)
         {
-            std::cout << "Received Interest: " << std::endl;
             if (hasPublishTopic(topic))
             {
                 //offerTopic
@@ -186,6 +185,7 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
                 Json::Value topics;
                 for (auto &topic : m_publishtopics)
                     topics.append(topic);
+                std::cout << "Offering Topic to: " << ip << "/" << port << std::endl;
                 sub.pubsub_offerTopic(m_ip, http_port, topics);
             }
         }
@@ -219,6 +219,7 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
             Subscriber* sub = m_subscribers.getSubscriber(ip, notification);
             if (sub == NULL)
             {
+                std::cout << "New subscriber: " << ip << "/" << port << std::endl;
                 sub = new Subscriber(ip, port);
                 sub->setTopic(notification);
                 m_subscribers.addSubscriber(sub);

@@ -32,7 +32,7 @@ PeerStubGenerator::PeerStubGenerator(const std::string &stubname, std::vector<Pr
 {
     for (auto &proc: subscribeProcs)
     {
-        proc.SetProcedureName("on"+ proc.GetProcedureName());
+       // proc.SetProcedureName("on"+ proc.GetProcedureName());
     }
 }
 

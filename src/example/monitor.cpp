@@ -17,7 +17,7 @@ class Monitor : public AbstractMonitor
     public:
         Monitor(uint16_t port, uint16_t port2) : AbstractMonitor(port, port2) {}
 
-        virtual void onairspeedChanged(double speeed)
+        virtual void airspeedChanged(double speeed)
         {
             cout << "AirSpeed: " << speeed << endl;
         }
@@ -34,7 +34,7 @@ int main (int argc, const char * argv[])
         return 1;
     }
 
-    m.addSubscribeTopic(Monitor::TOPIC_SUBSCRIBE_ONAIRSPEEDCHANGED);
+    m.addSubscribeTopic(Monitor::TOPIC_SUBSCRIBE_AIRSPEEDCHANGED);
 
     while(1)
     {
