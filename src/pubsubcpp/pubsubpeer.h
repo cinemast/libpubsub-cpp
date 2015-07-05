@@ -36,7 +36,7 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
 
         PubSubPeer(const std::string ip, int port) :
             m_port(port),
-            m_bcserver(port, ip),
+            m_bcserver(port),
             m_bcclientconnector(port),
             m_bcclient(m_bcclientconnector),
             m_httpserver(port),

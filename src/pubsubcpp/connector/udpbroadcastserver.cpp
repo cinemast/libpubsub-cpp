@@ -25,11 +25,10 @@
 
 using namespace std;
 
-UdpBroadcastServer::UdpBroadcastServer(int port, const string &ip) :
+UdpBroadcastServer::UdpBroadcastServer(int port) :
     m_port(port),
     m_thread(NULL),
-    m_run(false),
-    m_ip(ip)
+    m_run(false)
 {
 }
 
@@ -68,16 +67,19 @@ void UdpBroadcastServer::handleConnections(UdpBroadcastServer *_this)
 
     sock = socket (PF_INET,SOCK_DGRAM,IPPROTO_UDP);
 
+    const int trueValue = 1;
+    status = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &trueValue, sizeof(trueValue));
+    printf("Sockopt: %d", status);
     //struct timeval tv;
     //tv.tv_sec = 0;  /* 30 Secs Timeout */
     //tv.tv_usec = 100000;  // Not init'ing this can cause strange errors
-
+    cout << "Expected port: " << _this->m_port << endl;
     sock_in.sin_addr.s_addr = htonl(INADDR_ANY);//htonl(SO_BROADCAST);
     sock_in.sin_port = htons(_this->m_port);
     sock_in.sin_family = PF_INET;
 
     status = bind(sock, (struct sockaddr *)&sock_in, sinlen);
-    printf("Bind Status = %d\n", status);
+    printf("Bind Status = %d, errno: %d\n", status, errno);
 
     status = getsockname(sock, (struct sockaddr *)&sock_in, &sinlen);
     printf("Sock port %d\n",htons(sock_in.sin_port));

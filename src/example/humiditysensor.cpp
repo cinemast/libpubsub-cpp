@@ -27,12 +27,12 @@ class Handler : public jsonrpc::IClientConnectionHandler
 int main()
 {
     Handler h;
-    UdpBroadcastServer s(7777, "255.255.255.255");
+    UdpBroadcastServer s(8888);
     s.SetHandler(&h);
 
     s.StartListening();
 
-    UdpBroadcastClient c(7777);
+    UdpBroadcastClient c(8888);
     string result;
     while(1)
     {
