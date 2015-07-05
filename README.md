@@ -1,5 +1,7 @@
 # libpubsub-cpp
-Publish/Subscribe framework for C++
+[Topic based Publish/Subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern#Message_filtering) framework for C++
+
+![libjson-rpc-cpp logo](https://github.com/cinemast/libpubsub-cpp/blob/master/dev/logo.png?raw=true)
 
 ## Overview
 - Topic based Publish/Subscribe framework on top of JSON-RPC notifications
