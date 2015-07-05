@@ -30,6 +30,10 @@ using the [libjson-rpc-cpp IDL](https://github.com/cinemast/libjson-rpc-cpp#step
 		"params": {"ip": "192.168.13.1", "topic": "sometopic"}
 	},
 	{
+		"name": "pubsub.topics",
+		"params": {"ip": "192.168.13.1", "topics": ["sometopic", "sometopic2"]}
+	},
+	{
 		"name": "pubsub.offertopic",
 		"params": {"ip": "192.168.13.1", "topics": ["sometopic", "sometopic2"]}
 	},
@@ -60,7 +64,7 @@ It is a JSON file containing 2 sections:
 
 ```json
 {
-	"notifications": [
+	"topics": [
 		{
 			"name": "tempChanged",
 			"params": {"temp": 23.4}

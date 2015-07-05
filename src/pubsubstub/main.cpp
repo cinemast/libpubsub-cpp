@@ -49,7 +49,7 @@ int handleParameters(Json::Value& result, int argc, char** argv)
 
 bool checkTopLevelStructs(Json::Value &value)
 {
-    if (value.isMember("notifications") && value["notifications"].isArray())
+    if (value.isMember("topics") && value["topics"].isArray())
     {
         if (value.isMember("peers") && value["peers"].isArray())
         {
@@ -85,7 +85,7 @@ int main(int argc, char** argv)
     }
 
 
-    std::vector<Procedure> procs = jsonrpc::SpecificationParser::GetProceduresFromString(root["notifications"].toStyledString());
+    std::vector<Procedure> procs = jsonrpc::SpecificationParser::GetProceduresFromString(root["topics"].toStyledString());
 
     for (auto i=0; i < root["peers"].size(); i++)
     {
