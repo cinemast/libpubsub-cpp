@@ -1,5 +1,6 @@
 # libpubsub-cpp
-[Topic based Publish/Subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern#Message_filtering) framework for C++
+libpubsub-cpp is a [topic based](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern#Message_filtering) publish/subscribe framework for C++. It uses
+JSON-RPC on top of HTTP as transport layer to deliver topic notifications.
 
 ![libjson-rpc-cpp logo](https://github.com/cinemast/libpubsub-cpp/blob/master/dev/logo.png?raw=true)
 
@@ -9,6 +10,42 @@
 - JSON-RPC Client/Server for subscription management
 - JSON-RPC Client/Server for application specific notifications (topics)
 - pubsubstub: tool to generate peer stubs based on specification
+
+## Overlay network
+- Each peer is a JSON-RPC server and client.
+- If a peer wants to publish a new topic type, it broadcasts it through
+the network.
+- If a peer wants to subscribe for a new topic, it broadcasts its intent through
+the network.
+- Broadcasted intents for subscription/publishment are immediately answered by
+all affected peers with topic offers (implemented through a JSON-RPC method).
+
+So the interface each peer offers for subscription management can be described
+using the [libjson-rpc-cpp IDL](https://github.com/cinemast/libjson-rpc-cpp#step-1-writing-the-specification-file):
+
+```json
+[
+	{
+		"name": "pubsub.interest",
+		"params": {"ip": "192.168.13.1", "topic": "sometopic"}
+	},
+	{
+		"name": "pubsub.offertopic",
+		"params": {"ip": "192.168.13.1", "topics": ["sometopic", "sometopic2"]}
+	},
+	{
+		"name": "pubsub.subscribe",
+		"params": {"ip": "192.168.13.1", "notification": "sometopic"},
+		"returns": "b65dc7fa-a1ac-4a17-ac12-c693da8131f5"
+	},
+	{
+		"name": "pubsub.unsubscribe",
+		"params": {"notificationId": "b65dc7fa-a1ac-4a17-ac12-c693da8131f5"},
+		"returns": true
+	}
+]
+```
+
 
 ## Specification Syntax 
 It is a JSON file containing 2 sections:
@@ -74,7 +111,7 @@ It is a JSON file containing 2 sections:
 
 ## Build from source
 
-The framework currently only works under UNIX based environments.
+The framework currently only supports UNIX based environments.
 
 ### 1. Install the dependencies
 
