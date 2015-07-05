@@ -81,33 +81,6 @@ as major dependency. By installing it, all further dependencies will be installe
 
 See [here](https://github.com/cinemast/libjson-rpc-cpp#install-the-framework) how to install libjson-rpc-cpp on UNIX environments.
 
-**Debian**
-
-```sh
-sudo apt-get install libjsonrpccpp-dev libjsonrpccpp-tools
-```
-
-**Arch Linux**
-
-For Arch Linux there is a [PKGBUILD provided in the AUR](https://aur.archlinux.org/packages/libjson-rpc-cpp/).
-
-```sh
-sudo aura -A libjson-rpc-cpp
-```
-
-**Gentoo Linux**
-
-```sh
-sudo emerge dev-cpp/libjson-rpc-cpp
-```
-
-**Mac OS X**
-
-For OS X a [Brew](http://brew.sh) package is available:
-```sh
-brew install libjson-rpc-cpp
-```
-
 ### 2. Compile libpubsub-cpp
 ```sh
 git clone https://github.com/cinemast/libpubsub-cpp.git
