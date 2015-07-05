@@ -12,11 +12,12 @@ class PubSubClient : public jsonrpc::Client
     public:
         PubSubClient(jsonrpc::IClientConnector &conn, jsonrpc::clientVersion_t type = jsonrpc::JSONRPC_CLIENT_V2) : jsonrpc::Client(conn, type) {}
 
-        std::string pubsub_subscribe(const std::string& ip, const std::string& notification) throw (jsonrpc::JsonRpcException)
+        std::string pubsub_subscribe(const std::string& ip, uint16_t port, const std::string& notification) throw (jsonrpc::JsonRpcException)
         {
             Json::Value p;
             p["ip"] = ip;
-            p["notification"] = notification;
+            p["port"] = port;
+            p["topic"] = notification;
             Json::Value result = this->CallMethod("pubsub.subscribe",p);
             if (result.isString())
                 return result.asString();
@@ -33,10 +34,11 @@ class PubSubClient : public jsonrpc::Client
             else
                 throw jsonrpc::JsonRpcException(jsonrpc::Errors::ERROR_CLIENT_INVALID_RESPONSE, result.toStyledString());
         }
-        void pubsub_offerTopic(const std::string& ip, const Json::Value& topics) throw (jsonrpc::JsonRpcException)
+        void pubsub_offerTopic(const std::string& ip, uint16_t port, const Json::Value& topics) throw (jsonrpc::JsonRpcException)
         {
             Json::Value p;
             p["ip"] = ip;
+            p["port"] = port;
             p["topics"] = topics;
             this->CallNotification("pubsub.offerTopic",p);
         }

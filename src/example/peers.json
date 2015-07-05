@@ -37,8 +37,7 @@
 		},
 		{
 			"name": "Monitor",
-			"subscribe": ["tempChanged", "humidityChanged", 
-					"airspeedChanged", "shutterChanged"]
+            "subscribe": ["airspeedChanged"]
 		}
 	]
 }

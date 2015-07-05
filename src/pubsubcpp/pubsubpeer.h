@@ -22,7 +22,9 @@
 #include <jsonrpccpp/server/requesthandlerfactory.h>
 #include <jsonrpccpp/common/procedure.h>
 #include <jsonrpccpp/server/iclientconnectionhandler.h>
+#include <iostream>
 #include "subscriberlist.h"
+#include "networkhelper.h"
 
 
 template<class S>
@@ -34,24 +36,26 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
         typedef void(S::*notificationPointer_t) (const Json::Value &parameter);
 
 
-        PubSubPeer(const std::string ip, int port) :
-            m_port(port),
-            m_bcserver(port),
-            m_bcclientconnector(port),
+        PubSubPeer(uint16_t bc_port, uint16_t http_port, const std::string &interface = "") :
+            bc_port(bc_port),
+            http_port(http_port),
+            m_bcserver(bc_port),
+            m_bcclientconnector(bc_port),
             m_bcclient(m_bcclientconnector),
-            m_httpserver(port),
-            m_ip(ip),
+            m_httpserver(http_port),
             handler(jsonrpc::RequestHandlerFactory::createProtocolHandler(jsonrpc::JSONRPC_SERVER_V2, *this))
         {
+            m_ip = getIPAddress(interface);
+            std::cout << "IP: " << m_ip;
             m_bcserver.SetHandler(this->handler);
             m_httpserver.SetHandler(this->handler);
 
-            this->bindAndAddMethod(jsonrpc::Procedure("pubsub.subscribe", jsonrpc::PARAMS_BY_NAME, jsonrpc::JSON_STRING, "ip",jsonrpc::JSON_STRING,"notification",jsonrpc::JSON_STRING, NULL), &PubSubPeer::pubsub_subscribeI);
+            this->bindAndAddMethod(jsonrpc::Procedure("pubsub.subscribe", jsonrpc::PARAMS_BY_NAME, jsonrpc::JSON_STRING, "ip",jsonrpc::JSON_STRING,"port", jsonrpc::JSON_INTEGER, "topic",jsonrpc::JSON_STRING, NULL), &PubSubPeer::pubsub_subscribeI);
             this->bindAndAddMethod(jsonrpc::Procedure("pubsub.unsubscribe", jsonrpc::PARAMS_BY_NAME, jsonrpc::JSON_BOOLEAN, "notificationId",jsonrpc::JSON_STRING, NULL), &PubSubPeer::pubsub_unsubscribeI);
             this->bindAndAddNotification(jsonrpc::Procedure("pubsub.offerTopic", jsonrpc::PARAMS_BY_NAME, "ip",jsonrpc::JSON_STRING,"topics",jsonrpc::JSON_ARRAY, NULL), &PubSubPeer::pubsub_offerTopicI);
 
-            this->bindAndAddNotification(jsonrpc::Procedure("pubsub.interest", jsonrpc::PARAMS_BY_NAME, "ip",jsonrpc::JSON_STRING,"topic",jsonrpc::JSON_STRING, NULL), &PubSubPeer::pubsub_publishinterestI);
-            this->bindAndAddNotification(jsonrpc::Procedure("pubsub.topics", jsonrpc::PARAMS_BY_NAME, "ip",jsonrpc::JSON_STRING,"topics",jsonrpc::JSON_ARRAY, NULL), &PubSubPeer::pubsub_publishtopicsI);
+            this->bindAndAddNotification(jsonrpc::Procedure("pubsub.interest", jsonrpc::PARAMS_BY_NAME, "ip",jsonrpc::JSON_STRING, "port", jsonrpc::JSON_INTEGER, "topic",jsonrpc::JSON_STRING, NULL), &PubSubPeer::pubsub_publishinterestI);
+            this->bindAndAddNotification(jsonrpc::Procedure("pubsub.topics", jsonrpc::PARAMS_BY_NAME, "ip", jsonrpc::JSON_STRING,"port", jsonrpc::JSON_INTEGER, "topics",jsonrpc::JSON_ARRAY, NULL), &PubSubPeer::pubsub_publishtopicsI);
         }
 
         virtual ~PubSubPeer()
@@ -64,7 +68,7 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
 
         void pubsub_subscribeI(const Json::Value &request, Json::Value &response)
         {
-            response = this->pubsub_subscribe(request["ip"].asString(), request["notification"].asString());
+            response = this->pubsub_subscribe(request["ip"].asString(), request["port"].asInt(), request["notification"].asString());
         }
 
         void pubsub_unsubscribeI(const Json::Value &request, Json::Value &response)
@@ -74,17 +78,17 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
 
         void pubsub_offerTopicI(const Json::Value &request)
         {
-            this->pubsub_offerTopic(request["ip"].asString(), request["topics"]);
+            this->pubsub_offerTopic(request["ip"].asString(), request["port"].asInt(), request["topics"]);
         }
 
         void pubsub_publishinterestI(const Json::Value &request)
         {
-            this->pubsub_publishinterest(request["ip"].asString(), request["topic"].asString());
+            this->pubsub_publishinterest(request["ip"].asString(), request["port"].asInt(), request["topic"].asString());
         }
 
         void pubsub_publishtopicsI(const Json::Value &request)
         {
-            this->pubsub_publishtopics(request["ip"].asString(), request["topics"]);
+            this->pubsub_publishtopics(request["ip"].asString(), request["port"].asInt(), request["topics"]);
         }
 
     public:
@@ -110,7 +114,7 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
             m_publishtopics.insert(name);
             Json::Value topics;
             topics.append(name);
-            m_bcclient.pubsub_publishtopics(m_ip, topics);
+            m_bcclient.pubsub_publishtopics(m_ip, http_port, topics);
         }
 
         void removePublishTopic(const std::string &name)
@@ -128,7 +132,7 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
         void addSubscribeTopic(const std::string &name)
         {
             m_subscribetopics.insert(name);
-            m_bcclient.pubsub_publishinterest(m_ip, name);
+            m_bcclient.pubsub_publishinterest(m_ip, http_port, name);
         }
 
         void removeSubscribeTopic(const std::string &name)
@@ -172,28 +176,29 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
 
     private:
         //On subscriber broadcasts interest
-        void pubsub_publishinterest(const std::string &ip, const std::string &topic)
+        void pubsub_publishinterest(const std::string &ip, uint16_t port, const std::string &topic)
         {
+            std::cout << "Received Interest: " << std::endl;
             if (hasPublishTopic(topic))
             {
                 //offerTopic
-                Subscriber sub(ip, m_port);
+                Subscriber sub(ip, port);
                 Json::Value topics;
                 for (auto &topic : m_publishtopics)
                     topics.append(topic);
-                sub.pubsub_offerTopic(m_ip, topics);
+                sub.pubsub_offerTopic(m_ip, http_port, topics);
             }
         }
 
         //on publisher broadcass topics
-        void pubsub_publishtopics(const std::string &ip, const Json::Value &topics)
+        void pubsub_publishtopics(const std::string &ip, uint16_t port, const Json::Value &topics)
         {
             for (unsigned int i=0; i < topics.size(); i++)
             {
                 if(hasSubscribeTopic(topics[i].asString()))
                 {
-                    Subscriber* sub = new Subscriber(ip,m_port);
-                    std::string id = sub->pubsub_subscribe(m_ip, topics[i].asString());
+                    Subscriber* sub = new Subscriber(ip,port);
+                    std::string id = sub->pubsub_subscribe(m_ip, http_port, topics[i].asString());
                     if (id != "")
                     {
                         sub->setSubscriptionId(id);
@@ -207,12 +212,12 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
             }
         }
 
-        std::string pubsub_subscribe(const std::string &ip, const std::string &notification)
+        std::string pubsub_subscribe(const std::string &ip, uint16_t port, const std::string &notification)
         {
             Subscriber* sub = m_subscribers.getSubscriber(ip, notification);
             if (sub == NULL)
             {
-                sub = new Subscriber(ip, m_port);
+                sub = new Subscriber(ip, port);
                 sub->setTopic(notification);
                 m_subscribers.addSubscriber(sub);
             }
@@ -224,9 +229,9 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
             return m_subscribers.removeSubscriber(notificationId);
         }
 
-        void pubsub_offerTopic(const std::string &ip, const Json::Value &topics)
+        void pubsub_offerTopic(const std::string &ip, uint16_t port, const Json::Value &topics)
         {
-            this->pubsub_publishtopics(ip, topics);
+            this->pubsub_publishtopics(ip, port, topics);
         }
 
     protected:
@@ -283,7 +288,8 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
         std::map<std::string, notificationPointer_t>    notifications;
 
         jsonrpc::IProtocolHandler* handler;
-        int m_port;
+        uint16_t bc_port;
+        uint16_t http_port;
         std::string m_ip; //TODO: determine automatically
         UdpBroadcastServer m_bcserver;
         UdpBroadcastClient m_bcclientconnector;

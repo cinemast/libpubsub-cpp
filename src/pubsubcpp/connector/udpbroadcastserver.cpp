@@ -36,7 +36,6 @@ bool UdpBroadcastServer::StartListening()
 {
     m_run = true;
     m_thread = new thread(UdpBroadcastServer::handleConnections, this);
-    //handleConnections(this);
 }
 
 bool UdpBroadcastServer::StopListening()
@@ -89,9 +88,9 @@ void UdpBroadcastServer::handleConnections(UdpBroadcastServer *_this)
 
     while (_this->m_run)
     {
-        cout << "Before recvfrom" << endl;
+        //cout << "Before recvfrom" << endl;
         status = recvfrom(sock, _this->m_buffer, buflen, 0, (struct sockaddr *)&sock_in, &sinlen);
-        cout << "After recvfrom" << endl;
+        cout << "BC: "  << _this->m_buffer << endl;
         if (status > 0)
         {
             std::thread t(handleRequest, _this, inet_ntoa(sock_in.sin_addr), _this->m_buffer);
@@ -109,7 +108,7 @@ void UdpBroadcastServer::handleRequest(UdpBroadcastServer *_this, string ip, str
     Json::Value val;
     reader.parse(message,val);
 
-    val["params"]["ip"] = ip;
+    //val["params"]["ip"] = ip;
 
     _this->OnRequest(val.toStyledString(), NULL);
 }

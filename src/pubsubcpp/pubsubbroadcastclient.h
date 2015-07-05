@@ -12,17 +12,19 @@ class PubSubBroadcastClient : public jsonrpc::Client
     public:
         PubSubBroadcastClient(jsonrpc::IClientConnector &conn, jsonrpc::clientVersion_t type = jsonrpc::JSONRPC_CLIENT_V2) : jsonrpc::Client(conn, type) {}
 
-        void pubsub_publishinterest(const std::string& ip, const std::string& topic) throw (jsonrpc::JsonRpcException)
+        void pubsub_publishinterest(const std::string& ip, uint16_t port, const std::string& topic) throw (jsonrpc::JsonRpcException)
         {
             Json::Value p;
             p["ip"] = ip;
+            p["port"] = port;
             p["topic"] = topic;
             this->CallNotification("pubsub.publishinterest",p);
         }
-        void pubsub_publishtopics(const std::string& ip, const Json::Value& topics) throw (jsonrpc::JsonRpcException)
+        void pubsub_publishtopics(const std::string& ip, uint16_t port, const Json::Value& topics) throw (jsonrpc::JsonRpcException)
         {
             Json::Value p;
             p["ip"] = ip;
+            p["port"] = port;
             p["topics"] = topics;
             this->CallNotification("pubsub.publishtopics",p);
         }

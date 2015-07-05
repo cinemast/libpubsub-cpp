@@ -14,11 +14,14 @@ using namespace std;
 
 int main()
 {
-    AirspeedSensor sensor("192.168.13.78", 9999);
-    sensor.addPublishTopic(AirspeedSensor::TOPIC_PUBLISH_AIRSPEEDCHANGED);
+    AirspeedSensor sensor(9100, 9105);
     int speed = 34;
 
     sensor.Start();
+
+    sensor.addPublishTopic(AirspeedSensor::TOPIC_PUBLISH_AIRSPEEDCHANGED);
+
+
     while(true)
     {
         cout << "Published airspeed" << endl;

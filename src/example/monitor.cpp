@@ -7,53 +7,36 @@
  * @license See attached LICENSE.txt
  ************************************************************************/
 
-#include <iostream>
 #include "AbstractMonitor.h"
+#include <iostream>
 
 using namespace std;
 
 class Monitor : public AbstractMonitor
 {
-
     public:
-        Monitor(const std::string &ip, int port) : AbstractMonitor(ip, port)
+        Monitor(uint16_t port, uint16_t port2) : AbstractMonitor(port, port2) {}
+
+        virtual void onairspeedChanged(double speeed)
         {
+            cout << "AirSpeed: " << speeed << endl;
         }
 
-        virtual void ontempChanged(double temp)
-        {
-            cout << "Temp changed: " << temp << endl;
-        }
-
-        virtual void onhumidityChanged(double humidity)
-        {
-            cout << "Humidity changed: " << humidity << endl;
-        }
-
-        virtual void onairspeedChanged(double speed)
-        {
-            cout << "Airspeed changed: " << speed << endl;
-        }
-
-        virtual void onshutterChanged(bool open)
-        {
-
-        }
 };
 
-int main()
+int main (int argc, const char * argv[])
 {
-    Monitor m("127.0.0.1", 9999);
-
-    m.addSubscribeTopic(AbstractMonitor::TOPIC_SUBSCRIBE_ONTEMPCHANGED);
-    m.addSubscribeTopic(AbstractMonitor::TOPIC_SUBSCRIBE_ONHUMIDITYCHANGED);
-    m.addSubscribeTopic(AbstractMonitor::TOPIC_SUBSCRIBE_ONAIRSPEEDCHANGED);
-    cout << "Started monitor" << endl;
+    Monitor m(9100, 9102);
 
     m.Start();
 
-    while(true)
+    m.addSubscribeTopic(Monitor::TOPIC_SUBSCRIBE_ONAIRSPEEDCHANGED);
+
+    while(1)
+    {
+        cout << "In idle mode" << endl;
         sleep(1);
+    }
 
     return 0;
 }

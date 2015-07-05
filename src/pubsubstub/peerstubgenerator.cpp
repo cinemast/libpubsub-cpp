@@ -17,7 +17,7 @@ using namespace std;
 #define  TEMPLATE_CPPSERVER_NOTIFICATIONBINDING "this->bindAndAddNotification(jsonrpc::Procedure(\"<rawprocedurename>\", <paramtype>, <parameterlist> NULL), &<stubname>::<procedurename>I);"
 
 #define TEMPLATE_CPPSERVER_SIGCLASS "class <stubname> : public PubSubPeer<<stubname>>"
-#define TEMPLATE_CPPSERVER_SIGCONSTRUCTOR "<stubname>(const std::string &ip, int port) : PubSubPeer(ip, port)"
+#define TEMPLATE_CPPSERVER_SIGCONSTRUCTOR "<stubname>(uint16_t bc_port, uint16_t uc_port, const std::string& interface = \"\") : PubSubPeer(bc_port, uc_port, interface)"
 
 #define TEMPLATE_CPPSERVER_SIGNOTIFICATION "inline virtual void <procedurename>I(const Json::Value &request)"
 #define TEMPLATE_SERVER_ABSTRACTDEFINITION "virtual <returntype> <procedurename>(<parameterlist>) = 0;"
