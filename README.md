@@ -8,8 +8,7 @@ Publish/Subscribe framework for C++
 - JSON-RPC Client/Server for application specific notifications (topics)
 - pubsubstub: tool to generate peer stubs based on specification
 
-## Specification Syntax
-
+## Specification Syntax 
 It is a JSON file containing 2 sections:
 
 - List of topics (containing parameter information)
@@ -75,7 +74,13 @@ It is a JSON file containing 2 sections:
 
 The framework currently only works under UNIX based environments.
 
-### Dependencies
+### 1. Install the dependencies
+
+The framework has [libjson-rpc-cpp](https://github.com/cinemast/libjson-rpc-cpp) 
+as major dependency. By installing it, all further dependencies will be installed.
+
+See [here](https://github.com/cinemast/libjson-rpc-cpp#install-the-framework) how to install libjson-rpc-cpp on UNIX environments.
+
 **Debian**
 
 ```sh
@@ -103,7 +108,7 @@ For OS X a [Brew](http://brew.sh) package is available:
 brew install libjson-rpc-cpp
 ```
 
-### Compilation
+### 2. Compile libpubsub-cpp
 ```sh
 git clone https://github.com/cinemast/libpubsub-cpp.git
 cd libpubsub-cpp
