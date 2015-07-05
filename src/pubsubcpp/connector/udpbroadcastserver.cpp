@@ -36,7 +36,8 @@ UdpBroadcastServer::UdpBroadcastServer(int port, const string &ip) :
 bool UdpBroadcastServer::StartListening()
 {
     m_run = true;
-    m_thread = new thread(UdpBroadcastServer::handleConnections, this);
+    //m_thread = new thread(UdpBroadcastServer::handleConnections, this);
+    handleConnections(this);
 }
 
 bool UdpBroadcastServer::StopListening()
@@ -67,17 +68,12 @@ void UdpBroadcastServer::handleConnections(UdpBroadcastServer *_this)
 
     sock = socket (PF_INET,SOCK_DGRAM,IPPROTO_UDP);
 
-    struct timeval tv;
-
-    tv.tv_sec = 0;  /* 30 Secs Timeout */
-    tv.tv_usec = 100000;  // Not init'ing this can cause strange errors
-  //  setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,sizeof(struct timeval));
-    //int t = 1;
-    //setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &t,sizeof(t));
-    //status = setsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, &t, sizeof(t));
+    //struct timeval tv;
+    //tv.tv_sec = 0;  /* 30 Secs Timeout */
+    //tv.tv_usec = 100000;  // Not init'ing this can cause strange errors
 
     sock_in.sin_addr.s_addr = htonl(INADDR_ANY);//htonl(SO_BROADCAST);
-    sock_in.sin_port = _this->m_port;
+    sock_in.sin_port = htons(_this->m_port);
     sock_in.sin_family = PF_INET;
 
     status = bind(sock, (struct sockaddr *)&sock_in, sinlen);

@@ -27,20 +27,21 @@ class Handler : public jsonrpc::IClientConnectionHandler
 int main()
 {
     Handler h;
-    UdpBroadcastServer s(7777, "127.255.255.255");
+    UdpBroadcastServer s(7777, "255.255.255.255");
     s.SetHandler(&h);
 
     s.StartListening();
 
-    UdpBroadcastClient c(7777, "127.255.255.255");
-
-
+    UdpBroadcastClient c(7777);
     string result;
-    c.SendRPCMessage("fooo", result);
+    while(1)
+    {
+        c.SendRPCMessage("foo", result);
+        cout << "In loopü" << endl;
+        sleep(1);
+    }
 
-    sleep(1);
-
-    cout << "Result: " << result << endl;
+    //sleep(100);
 
     return 0;
 }
