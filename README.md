@@ -11,7 +11,7 @@ JSON-RPC on top of HTTP as transport layer to deliver topic notifications.
 - JSON-RPC Client/Server for application specific notifications (topics)
 - pubsubstub: tool to generate peer stubs based on specification
 
-## Overlay network
+## Overlay network / Subscription management
 - Each peer is a JSON-RPC server and client.
 - If a peer wants to publish a new topic type, it broadcasts it through
 the network (pubsub.topics).
@@ -52,6 +52,9 @@ using the [libjson-rpc-cpp IDL](https://github.com/cinemast/libjson-rpc-cpp#step
 ]
 ```
 
+By implementing these JSON-RPC methods via Broadcast and HTTP for each peer
+as client and server, also other languages can be used to join the Publish/Subscribe
+network of libpubsub-cpp.
 
 ## Specification Syntax 
 It is a JSON file containing 2 sections:
