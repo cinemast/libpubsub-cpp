@@ -36,8 +36,8 @@ UdpBroadcastServer::UdpBroadcastServer(int port, const string &ip) :
 bool UdpBroadcastServer::StartListening()
 {
     m_run = true;
-    //m_thread = new thread(UdpBroadcastServer::handleConnections, this);
-    handleConnections(this);
+    m_thread = new thread(UdpBroadcastServer::handleConnections, this);
+    //handleConnections(this);
 }
 
 bool UdpBroadcastServer::StopListening()
