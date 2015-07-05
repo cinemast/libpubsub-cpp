@@ -46,7 +46,7 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
             handler(jsonrpc::RequestHandlerFactory::createProtocolHandler(jsonrpc::JSONRPC_SERVER_V2, *this))
         {
             m_ip = getIPAddress(interface);
-            std::cout << "IP: " << m_ip;
+            //std::cout << "IP: " << m_ip;
             m_bcserver.SetHandler(this->handler);
             m_httpserver.SetHandler(this->handler);
 
@@ -185,7 +185,7 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
                 Json::Value topics;
                 for (auto &topic : m_publishtopics)
                     topics.append(topic);
-                std::cout << "Offering Topic to: " << ip << "/" << port << std::endl;
+                //std::cout << "Offering Topic to: " << ip << "/" << port << std::endl;
                 sub.pubsub_offerTopic(m_ip, http_port, topics);
             }
         }
@@ -193,7 +193,6 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
         //on publisher broadcass topics
         void pubsub_publishtopics(const std::string &ip, uint16_t port, const Json::Value &topics)
         {
-            std::cout << "Received topics: " << std::endl;
 
             for (unsigned int i=0; i < topics.size(); i++)
             {

@@ -20,12 +20,17 @@ class Monitor : public AbstractMonitor
 
         virtual void airspeedChanged(double speeed)
         {
-            cout << "AirSpeed: " << speeed << endl;
+            cout << "AirSpeed: " << speeed << " km/h" <<  endl;
         }
 
         virtual void humidityChanged(double humidity)
         {
-            cout << "Humidity: " << humidity << endl;
+            cout << "Humidity: " << humidity << " %" << endl;
+        }
+
+        virtual void tempChanged(double temp)
+        {
+            cout << "Temp: " << temp << " °C" << endl;
         }
 };
 
