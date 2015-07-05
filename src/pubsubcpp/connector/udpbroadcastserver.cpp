@@ -52,7 +52,7 @@ bool UdpBroadcastServer::StopListening()
 
 bool UdpBroadcastServer::SendResponse(const string &response, void *addInfo)
 {
-    cout << "Sending response from UDPServer: " << response << endl;
+   // cout << "Sending response from UDPServer: " << response << endl;
     return true;
 }
 
@@ -69,20 +69,19 @@ void UdpBroadcastServer::handleConnections(UdpBroadcastServer *_this)
 
     const int trueValue = 1;
     status = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &trueValue, sizeof(trueValue));
-    printf("Sockopt: %d", status);
+    //printf("Sockopt: %d", status);
     //struct timeval tv;
     //tv.tv_sec = 0;  /* 30 Secs Timeout */
     //tv.tv_usec = 100000;  // Not init'ing this can cause strange errors
-    cout << "Expected port: " << _this->m_port << endl;
     sock_in.sin_addr.s_addr = htonl(INADDR_ANY);//htonl(SO_BROADCAST);
     sock_in.sin_port = htons(_this->m_port);
     sock_in.sin_family = PF_INET;
 
     status = bind(sock, (struct sockaddr *)&sock_in, sinlen);
-    printf("Bind Status = %d, errno: %d\n", status, errno);
+    //printf("Bind Status = %d, errno: %d\n", status, errno);
 
     status = getsockname(sock, (struct sockaddr *)&sock_in, &sinlen);
-    printf("Sock port %d\n",htons(sock_in.sin_port));
+    //printf("Sock port %d\n",htons(sock_in.sin_port));
 
     buflen = UDP_BUFFER_LEN;
     memset(_this->m_buffer, 0, buflen);
@@ -91,7 +90,7 @@ void UdpBroadcastServer::handleConnections(UdpBroadcastServer *_this)
     {
         //cout << "Before recvfrom" << endl;
         status = recvfrom(sock, _this->m_buffer, buflen, 0, (struct sockaddr *)&sock_in, &sinlen);
-        cout << "BC: "  << _this->m_buffer << endl;
+      //  cout << "BC: "  << _this->m_buffer << endl;
         if (status > 0)
         {
             std::thread t(handleRequest, _this, inet_ntoa(sock_in.sin_addr), _this->m_buffer);
@@ -105,7 +104,7 @@ void UdpBroadcastServer::handleConnections(UdpBroadcastServer *_this)
 
 void UdpBroadcastServer::handleRequest(UdpBroadcastServer *_this, string ip, string message)
 {
-    cout << "Handling Request" << endl;
+   // cout << "Handling Request" << endl;
     Json::Reader reader;
     Json::Value val;
     reader.parse(message,val);

@@ -30,4 +30,6 @@ target_link_libraries(airsensor ${link_libraries} pubsubcpp)
 add_executable(humiditysensor humiditysensor.cpp ${CMAKE_BINARY_DIR}/HumiditySensor.h)
 target_link_libraries(humiditysensor ${link_libraries} pubsubcpp)
 
+add_executable(tempsensor tempsensor.cpp ${CMAKE_BINARY_DIR}/TempSensor.h)
+target_link_libraries(tempsensor ${link_libraries} pubsubcpp)
 

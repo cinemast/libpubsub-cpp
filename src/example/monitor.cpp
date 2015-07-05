@@ -8,6 +8,7 @@
  ************************************************************************/
 
 #include "AbstractMonitor.h"
+#include "ports.h"
 #include <iostream>
 
 using namespace std;
@@ -22,11 +23,15 @@ class Monitor : public AbstractMonitor
             cout << "AirSpeed: " << speeed << endl;
         }
 
+        virtual void humidityChanged(double humidity)
+        {
+            cout << "Humidity: " << humidity << endl;
+        }
 };
 
 int main (int argc, const char * argv[])
 {
-    Monitor m(9100, 9102);
+    Monitor m(PORT_BROADCAST, PORT_MONITOR);
 
     if (!m.Start())
     {
@@ -34,11 +39,10 @@ int main (int argc, const char * argv[])
         return 1;
     }
 
-    m.addSubscribeTopic(Monitor::TOPIC_SUBSCRIBE_AIRSPEEDCHANGED);
+    m.autoSubscribeAll();
 
     while(1)
     {
-        cout << "In idle mode" << endl;
         sleep(1);
     }
 

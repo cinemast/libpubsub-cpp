@@ -44,12 +44,6 @@ void UdpBroadcastClient::SendRPCMessage(const std::string &message, std::string 
 
     sock = socket (PF_INET,SOCK_DGRAM,IPPROTO_UDP);
 
- //   sock_in.sin_addr.s_addr = htonl(INADDR_ANY);
- //   sock_in.sin_port = htons(m_port);
- //   sock_in.sin_family = PF_INET;
-
-  //  status = bind(sock, (struct sockaddr *)&sock_in, sinlen);
-
     status = setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &yes, sizeof(int) );
   //  status = setsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, &yes, sizeof(yes));
 

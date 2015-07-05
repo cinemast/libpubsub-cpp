@@ -8,40 +8,26 @@
  ************************************************************************/
 
 #include "HumiditySensor.h"
-#include <pubsubcpp/connector/udpbroadcastserver.h>
+#include "ports.h"
 #include <iostream>
 
 using namespace std;
-using namespace jsonrpc;
-
-class Handler : public jsonrpc::IClientConnectionHandler
-{
-        virtual void HandleRequest(const std::string& request, std::string& retValue)
-        {
-            retValue = request + "a";
-            cout << "received request" << endl;
-        }
-
-};
 
 int main()
 {
-    Handler h;
-    UdpBroadcastServer s(8888);
-    s.SetHandler(&h);
-
-    s.StartListening();
-
-    UdpBroadcastClient c(8888);
-    string result;
-    while(1)
+    HumiditySensor sensor(PORT_BROADCAST, PORT_HUMIDITYSENSOR);
+    double humidity = 0.2;
+    if(!sensor.Start())
     {
-        c.SendRPCMessage("foo", result);
-        cout << "In loopü" << endl;
-        sleep(1);
+        cerr << "Could not start peer" << endl;
+        return 1;
     }
-
-    //sleep(100);
+    sensor.autoPublishAll();
+    while(true)
+    {
+        sensor.publishHumidityChanged(humidity+= 0.001);
+        sleep(3);
+    }
 
     return 0;
 }

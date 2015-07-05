@@ -135,12 +135,46 @@ void PeerStubGenerator::generateTopicConstants()
         this->writeLine("static constexpr const char* " + constantname + " = \"" + constantvalue + "\";");
     }
 
+    if (this->publishProcs.size() > 0)
+    {
+        this->writeLine("void autoPublishAll()");
+        this->writeLine("{");
+        this->increaseIndentation();
+        for(auto& proc: this->publishProcs)
+        {
+            constantname = "TOPIC_PUBLISH_" + CPPHelper::normalizeString(proc.GetProcedureName());
+            constantvalue = proc.GetProcedureName();
+            std::transform(constantname.begin(), constantname.end(), constantname.begin(),::toupper);
+            this->writeLine("this->addPublishTopic(" + constantname + ");");
+
+        }
+        this->decreaseIndentation();
+        this->writeLine("}");
+    }
+
     for(auto& proc: this->subscribeProcs)
     {
         constantname = "TOPIC_SUBSCRIBE_" + CPPHelper::normalizeString(proc.GetProcedureName());
         constantvalue = proc.GetProcedureName();
         std::transform(constantname.begin(), constantname.end(), constantname.begin(),::toupper);
         this->writeLine("static constexpr const char* " + constantname + " = \"" + constantvalue + "\";");
+    }
+
+    if (this->subscribeProcs.size() > 0)
+    {
+        this->writeLine("void autoSubscribeAll()");
+        this->writeLine("{");
+        this->increaseIndentation();
+        for(auto& proc: this->subscribeProcs)
+        {
+            constantname = "TOPIC_SUBSCRIBE_" + CPPHelper::normalizeString(proc.GetProcedureName());
+            constantvalue = proc.GetProcedureName();
+            std::transform(constantname.begin(), constantname.end(), constantname.begin(),::toupper);
+            this->writeLine("this->addSubscribeTopic(" + constantname + ");");
+
+        }
+        this->decreaseIndentation();
+        this->writeLine("}");
     }
 
 }

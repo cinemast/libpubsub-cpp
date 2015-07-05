@@ -1,13 +1,14 @@
 /*************************************************************************
  * libjson-rpc-cpp
  *************************************************************************
- * @file    humiditysensor.cpp
- * @date    6/30/2015
+ * @file
+ * @date    7/6/2015
  * @author  Peter Spiess-Knafl <dev@spiessknafl.at>
  * @license See attached LICENSE.txt
  ************************************************************************/
 
-#include "AirspeedSensor.h"
+
+#include "TempSensor.h"
 #include "ports.h"
 #include <iostream>
 
@@ -15,8 +16,8 @@ using namespace std;
 
 int main()
 {
-    AirspeedSensor sensor(PORT_BROADCAST, PORT_AIRSENSOR);
-    int speed = 34;
+    TempSensor sensor(PORT_BROADCAST, PORT_TEMPSENSOR);
+    double temp = 12.4;
 
     if(!sensor.Start())
     {
@@ -26,7 +27,7 @@ int main()
     sensor.autoPublishAll();
     while(true)
     {
-        sensor.publishAirspeedChanged(speed++);
+        sensor.publishTempChanged(temp++);
         sleep(1);
     }
 
