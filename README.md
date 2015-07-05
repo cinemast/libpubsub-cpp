@@ -20,7 +20,7 @@ It is a JSON file containing 2 sections:
 	- publish: list of topics, the peer can publish (can be ommited)
 	- subscribe: list of topic, the peer can subscribe (can be ommited)
 
-```
+```json
 {
 	"notifications": [
 		{
