@@ -18,7 +18,7 @@ class PubSubBroadcastClient : public jsonrpc::Client
             p["ip"] = ip;
             p["port"] = port;
             p["topic"] = topic;
-            this->CallNotification("pubsub.publishinterest",p);
+            this->CallNotification("pubsub.interest",p);
         }
         void pubsub_publishtopics(const std::string& ip, uint16_t port, const Json::Value& topics) throw (jsonrpc::JsonRpcException)
         {
@@ -26,7 +26,7 @@ class PubSubBroadcastClient : public jsonrpc::Client
             p["ip"] = ip;
             p["port"] = port;
             p["topics"] = topics;
-            this->CallNotification("pubsub.publishtopics",p);
+            this->CallNotification("pubsub.topics",p);
         }
 };
 

@@ -52,6 +52,7 @@ bool UdpBroadcastServer::StopListening()
 
 bool UdpBroadcastServer::SendResponse(const string &response, void *addInfo)
 {
+    cout << "Sending response from UDPServer: " << response << endl;
     return true;
 }
 
@@ -104,6 +105,7 @@ void UdpBroadcastServer::handleConnections(UdpBroadcastServer *_this)
 
 void UdpBroadcastServer::handleRequest(UdpBroadcastServer *_this, string ip, string message)
 {
+    cout << "Handling Request" << endl;
     Json::Reader reader;
     Json::Value val;
     reader.parse(message,val);

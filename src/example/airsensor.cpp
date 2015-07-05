@@ -17,14 +17,18 @@ int main()
     AirspeedSensor sensor(9100, 9105);
     int speed = 34;
 
-    sensor.Start();
+    if(!sensor.Start())
+    {
+        cerr << "Could not start peer" << endl;
+        return 1;
+    }
 
     sensor.addPublishTopic(AirspeedSensor::TOPIC_PUBLISH_AIRSPEEDCHANGED);
 
 
     while(true)
     {
-        cout << "Published airspeed" << endl;
+        //cout << "Published airspeed" << endl;
         sensor.publishAirspeedChanged(speed++);
 
         sleep(1);

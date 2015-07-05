@@ -28,7 +28,11 @@ int main (int argc, const char * argv[])
 {
     Monitor m(9100, 9102);
 
-    m.Start();
+    if (!m.Start())
+    {
+        cerr << "Could not start peer" << endl;
+        return 1;
+    }
 
     m.addSubscribeTopic(Monitor::TOPIC_SUBSCRIBE_ONAIRSPEEDCHANGED);
 

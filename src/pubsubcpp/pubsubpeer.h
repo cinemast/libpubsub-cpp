@@ -193,6 +193,8 @@ class PubSubPeer : public jsonrpc::IProcedureInvokationHandler
         //on publisher broadcass topics
         void pubsub_publishtopics(const std::string &ip, uint16_t port, const Json::Value &topics)
         {
+            std::cout << "Received topics: " << std::endl;
+
             for (unsigned int i=0; i < topics.size(); i++)
             {
                 if(hasSubscribeTopic(topics[i].asString()))
