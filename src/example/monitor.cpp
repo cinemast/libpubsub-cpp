@@ -32,6 +32,11 @@ class Monitor : public AbstractMonitor
         {
             cout << "Temp: " << temp << " °C" << endl;
         }
+
+        virtual void shutterChanged(bool open)
+        {
+            cout << "Shutter changed: " << open << endl;
+        }
 };
 
 int main (int argc, const char * argv[])
@@ -44,6 +49,7 @@ int main (int argc, const char * argv[])
         return 1;
     }
 
+    //m.addSubscribeTopic();
     m.autoSubscribeAll();
 
     while(1)
