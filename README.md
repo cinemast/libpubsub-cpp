@@ -1,3 +1,5 @@
+*Warning: this software is currently in an experimental phase. You will find stable releases in the [github releases](https://github.com/cinemast/libpubsub-cpp/releases) section, as soon as they are ready.*
+
 # libpubsub-cpp
 libpubsub-cpp is a [topic based](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern#Message_filtering) publish/subscribe framework for C++. It uses
 JSON-RPC on top of HTTP as transport layer to deliver topic notifications.
